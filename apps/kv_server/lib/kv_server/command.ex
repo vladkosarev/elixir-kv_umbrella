@@ -18,6 +18,12 @@ defmodule KVServer.Command do
 
       iex> KVServer.Command.parse "DELETE shopping eggs\r\n"
       {:ok, {:delete, "shopping", "eggs"}}
+      
+      iex> KVServer.Command.parse "PUT shopping eggs 3\r\n"
+      {:ok, {:put, "shopping", "eggs", "3"}}
+      
+      iex> KVServer.Command.parse "GET shopping\r\n"
+      {:ok, {:get, "shopping"}}
 
   Unknown commands or commands with the wrong number of
   arguments return an error:
@@ -25,7 +31,7 @@ defmodule KVServer.Command do
       iex> KVServer.Command.parse "UNKNOWN shopping eggs\r\n"
       {:error, :unknown_command}
 
-      iex> KVServer.Command.parse "GET shopping\r\n"
+      iex> KVServer.Command.parse "PUT shopping\r\n"
       {:error, :unknown_command}
 
   """
@@ -65,9 +71,20 @@ defmodule KVServer.Command do
   
   def run({:get, bucket}) do
     lookup bucket, fn pid ->
-      value = KV.Bucket.get(pid)
-      {:ok, "#{value}\r\nOK\r\n"}
+      value = KV.Bucket.get(pid) 
+      {:ok, "#{bucket_to_string value}\r\nOK\r\n"}
     end
+  end
+
+  defp bucket_to_string(bucket) do
+    bucket_to_string(bucket, "")
+  end
+    
+  defp bucket_to_string(bucket,str) do
+    case bucket do
+      [] -> str
+      [{key,value} | tail] -> bucket_to_string(tail, str <> key <> " - " <> value <> "\r\n")
+    end      
   end
 
   def run({:put, bucket, key, value}) do

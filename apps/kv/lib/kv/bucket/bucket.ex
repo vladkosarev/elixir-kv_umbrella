@@ -10,7 +10,7 @@ defmodule KV.Bucket do
   Gets all values from the `bucket`.
   """
   def get(bucket) do
-    Agent.get(bucket, &Enum.map(&1, fn {x,y} -> x <> " - " <> y <> "\n" end) )
+    Agent.get(bucket, &Map.to_list(&1) )
   end
 
   @doc """

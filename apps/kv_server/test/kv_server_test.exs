@@ -37,6 +37,16 @@ defmodule KVServerTest do
     assert send_and_recv(socket, "GET shopping eggs\r\n") == "\r\n"
     assert send_and_recv(socket, "") == "OK\r\n"
     
+    assert send_and_recv(socket, "PUT shopping milk 2\r\n") ==
+       "OK\r\n"
+    assert send_and_recv(socket, "PUT shopping eggs 3\r\n") ==
+       "OK\r\n"
+       
+    assert send_and_recv(socket, "GET shopping\r\n") == "eggs - 3\r\n"
+    assert send_and_recv(socket, "") == "milk - 2\r\n"
+    assert send_and_recv(socket, "") == "\r\n"
+    assert send_and_recv(socket, "") == "OK\r\n"   
+    
   end
 
   defp send_and_recv(socket, command) do
