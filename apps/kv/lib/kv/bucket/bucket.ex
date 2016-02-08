@@ -7,6 +7,13 @@ defmodule KV.Bucket do
   end
 
   @doc """
+  Gets all values from the `bucket`.
+  """
+  def get(bucket) do
+    Agent.get(bucket, &Enum.map(&1, fn {x,y} -> x <> " - " <> y <> "\n" end) )
+  end
+
+  @doc """
   Gets a value from the `bucket` by `key`.
   """
   def get(bucket, key) do
@@ -25,10 +32,10 @@ defmodule KV.Bucket do
 
   Returns the current value of `key`, if `key` exists.
   """
-def delete(bucket, key) do
-  Agent.get_and_update(bucket, fn dict->
-    Map.pop(dict, key)
-  end)
-end
+  def delete(bucket, key) do
+    Agent.get_and_update(bucket, fn dict->
+      Map.pop(dict, key)
+    end)
+  end
   
 end

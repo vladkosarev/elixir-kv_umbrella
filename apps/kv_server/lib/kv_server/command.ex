@@ -32,8 +32,9 @@ defmodule KVServer.Command do
   
   def parse(line) do
     case String.split(line) do
-      ["CREATE", bucket] -> {:ok, {:create, bucket}}
+      ["CREATE", bucket] -> {:ok, {:create, bucket}}      
       ["GET", bucket, key] -> {:ok, {:get, bucket, key}}
+      ["GET", bucket] -> {:ok, {:get, bucket}}      
       ["PUT", bucket, key, value] -> {:ok, {:put, bucket, key, value}}
       ["DELETE", bucket, key] -> {:ok, {:delete, bucket, key}}
       _ -> {:error, :unknown_command}
@@ -44,7 +45,6 @@ defmodule KVServer.Command do
   Runs the given command.
   """
   def run(command)
-
 
   def run({:create, bucket}) do
     KV.Registry.create(KV.Registry, bucket)
@@ -59,6 +59,13 @@ defmodule KVServer.Command do
   def run({:get, bucket, key}) do
     lookup bucket, fn pid ->
       value = KV.Bucket.get(pid, key)
+      {:ok, "#{value}\r\nOK\r\n"}
+    end
+  end
+  
+  def run({:get, bucket}) do
+    lookup bucket, fn pid ->
+      value = KV.Bucket.get(pid)
       {:ok, "#{value}\r\nOK\r\n"}
     end
   end

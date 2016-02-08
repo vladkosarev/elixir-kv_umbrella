@@ -36,6 +36,7 @@ defmodule KVServerTest do
     # GET returns two lines
     assert send_and_recv(socket, "GET shopping eggs\r\n") == "\r\n"
     assert send_and_recv(socket, "") == "OK\r\n"
+    
   end
 
   defp send_and_recv(socket, command) do
